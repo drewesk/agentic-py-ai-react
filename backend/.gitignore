@@ -22,3 +22,5 @@ venv/
 .venv/
 env/
 ENV/
+
+config.py

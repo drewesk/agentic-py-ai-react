@@ -7,3 +7,4 @@ pandas
 python-docx
 pdfplumber
 requests
+httpx

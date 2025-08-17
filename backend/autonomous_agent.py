@@ -36,7 +36,7 @@ async def process_single_task(task):
     task_id = task["id"]
     logging.info(f"Processing task {task_id}: {task['description']}")
     context = "\n".join(retrieve_from_memory(task["description"], k=5))
-    response = agent_response(task["description"], context)
+    response = await agent_response(task["description"], context)
     add_to_memory(response, {"task_id": task_id})
     add_node(f"task_{task_id}", node_type="task", label=task["description"])
     add_node(f"insight_{task_id}", node_type="insight", label=f"Insight {task_id}")
