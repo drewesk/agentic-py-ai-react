@@ -35,8 +35,8 @@ def get_pending_tasks():
 async def process_single_task(task):
     task_id = task["id"]
     logging.info(f"Processing task {task_id}: {task['description']}")
-    context = "\n".join(retrieve_from_memory(task["description"], k=5))
-    response = await agent_response(task["description"], context)
+    context = "keep writing your own apps and code + \n".join(retrieve_from_memory(task["description"], k=5))
+    response = await agent_response(prompt=task["description"], memory_docs=context)
     add_to_memory(response, {"task_id": task_id})
     add_node(f"task_{task_id}", node_type="task", label=task["description"])
     add_node(f"insight_{task_id}", node_type="insight", label=f"Insight {task_id}")
