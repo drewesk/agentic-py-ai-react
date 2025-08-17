@@ -43,6 +43,7 @@ This package provides a **fully autonomous AI research lab**:
   - Task monitor
   - Memory metrics
   - Interactive knowledge graph
+  
 *********
   > If backend server goes rogue and keeps spawning no matter how many kill -9 <PIDs> that you do. We've added a kill switch to the autonomous loop, type in the shell `export STOP_AGENT=1` in the backend/ local to where the server is running. Then pkill -f python to prevent the server from overtaking society. You're a true hero now!
 ******
