@@ -2,7 +2,8 @@
 
 ## Overview
 
-- If a file is .gitignored just touch it as an empty file in the corresponding location to tree-map.
+- If a file is `.gitignored`, just touch it as an empty file in the corresponding location to tree-map.
+
 ```
 ./
 ├─ backend/
@@ -28,36 +29,47 @@
 │           ├─ MemoryMetrics.tsx
 │           └─ KnowledgeGraph.tsx
 └─ README.md
-
 ```
 
 This package provides a **fully autonomous AI research lab**:
 
-- Multi-agent parallel task execution
-- Self-generating tasks with priorities
-- File ingestion & persistent memory
-- Cross-referencing and insight generation
-- Email/Slack/Console notifications 
-- Logging & metrics
-- Live React dashboard with:
-  - Task monitor
-  - Memory metrics
-  - Interactive knowledge graph
-  
-*********
-  > If backend server goes rogue and keeps spawning no matter how many kill -9 <PIDs> that you do. We've added a kill switch to the autonomous loop, type in the shell `export STOP_AGENT=1` in the backend/ local to where the server is running. Then pkill -f python to prevent the server from overtaking society. You're a true hero now!
-******
+- Multi-agent parallel task execution  
+- Self-generating tasks with priorities  
+- File ingestion & persistent memory  
+- Cross-referencing and insight generation  
+- Email / Slack / Console notifications  
+- Logging & metrics  
+- Live React dashboard with:  
+  - Task monitor  
+  - Memory metrics  
+  - Interactive knowledge graph  
+
+---
+
+> ⚠️ **Kill Switch Notice**  
+> If the backend server goes rogue and keeps spawning no matter how many `kill -9 <PIDs>` you do, we've added a kill switch to the autonomous loop.  
+> Run in the shell (inside `backend/` where the server is running):  
+> ```bash
+> export STOP_AGENT=1
+> ```  
+> Then run:  
+> ```bash
+> pkill -f python
+> ```  
+> to prevent the server from overtaking society. You're a true hero now!  
+
+---
 
 ## Setup
 
-first ollama serve,  edit the model name in agent.py or ollama run gemma:2b in a separate shell.
+First run `ollama serve`, edit the model name in `agent.py`, or run `ollama run gemma:2b` in a separate shell.
 
-### Front end
+### Frontend
 #### Node.js, React/Vite
 
-> on localhost:5173
+> Runs on `localhost:5173`
 
-```
+```bash
 cd frontend
 npm i
 npm run dev
@@ -66,20 +78,25 @@ npm run dev
 ### Backend
 #### Python
 
-> on localhost:5173
+> Runs on `localhost:5173`
 
-```zsh
-cd backend # in new terminal
-
+```bash
+cd backend   # in new terminal
 pip install -r requirements.txt
+
 mkdir uploads results
 echo "[]" > tasks.json
+
 uvicorn main:app --reload
 ```
-Or if rerunning server after install
 
-```zsh
-# Initialize tasks.json with empty list safely
+Or if rerunning the server after install:
+
+```bash
+cd backend
+
+# uploads/ and results/ already exist
+# wipe tasks.json and initialize with empty list
 python -c 'import json; json.dump([], open("tasks.json", "w"))'
 
 uvicorn main:app --reload

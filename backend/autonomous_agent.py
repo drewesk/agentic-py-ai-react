@@ -46,7 +46,7 @@ def monitor_new_files():
 # ---------- task helpers ----------
 async def get_pending_tasks():
     tasks = await _load_tasks()
-    return [t for t in tasks if t.get("status") == "pending"]
+    return sorted([t for t in tasks if t.get("status") == "pending"], key=lambda x: x["id"])
 
 async def _set_status(task_ids, new_status):
     tasks = await _load_tasks()
@@ -70,7 +70,7 @@ async def process_single_task(task):
     logging.info(f"Processing task {task_id}: {task['description']}")
     # cleaner context join
     ctx = "\n\n".join(retrieve_from_memory(task["description"], k=5))
-    response = await agent_response(prompt=task["description"], memory_docs=ctx)
+    response = await asyncio.to_thread(agent_response, prompt=task["description"], memory_docs=ctx)
     add_to_memory(response, {"task_id": task_id})
     add_node(f"task_{task_id}", node_type="task", label=task["description"])
     add_node(f"insight_{task_id}", node_type="insight", label=f"Insight {task_id}")
@@ -94,11 +94,15 @@ async def process_all_tasks():
     pending = await get_pending_tasks()
     if not pending:
         return
-    # mark RUNNING first so a crash doesn’t re-run and overwrite
-    await _set_status([t["id"] for t in pending], "running")
 
-    # parallel execution is fine; file names now sort naturally by ID
-    await asyncio.gather(*(process_single_task(t) for t in pending))
+    # pick ONLY the first pending task
+    task = pending[0]
 
-    # mark COMPLETED
-    await _set_status([t["id"] for t in pending], "completed")
+    # mark just this one as RUNNING
+    await _set_status([task["id"]], "running")
+
+    # run it to completion before touching the next
+    await process_single_task(task)
+
+    # mark it COMPLETED
+    await _set_status([task["id"]], "completed")
