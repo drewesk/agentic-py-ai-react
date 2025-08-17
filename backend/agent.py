@@ -4,7 +4,7 @@ from config import PERPLEXITY_API_KEY  # optional
 
 # Ollama server config
 OLLAMA_SERVER_URL = "http://localhost:11434"  # default Ollama server endpoint
-MODEL_NAME = "llama2"  # replace with your model name
+MODEL_NAME = "gemma:2b"  # replace with your model name
 
 async def agent_response(prompt: str, context: str = "") -> str:
     """
