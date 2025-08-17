@@ -1,0 +1,24 @@
+results/*
+uploads/*
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+develop-eggs/
+.installed.cfg
+*.manifest
+*.spec
+*.log
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/

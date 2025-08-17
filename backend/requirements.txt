@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+langchain
+openai
+chromadb
+pandas
+python-docx
+pdfplumber
+requests
