@@ -1,4 +1,3 @@
-import os
 import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,13 +20,16 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+shutdown_event = asyncio.Event()
+
+# --- basic API ---
 from fastapi.responses import StreamingResponse
 
 @app.get("/tasks_stream")
 async def tasks_stream():
     async def event_generator():
-        while True:
-            tasks = get_pending_tasks()
+        while not shutdown_event.is_set():
+            tasks = await get_pending_tasks()
             yield f"data: {json.dumps(tasks)}\n\n"
             await asyncio.sleep(5)
     return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -40,8 +42,26 @@ async def memory_metrics():
 async def knowledge_graph_api():
     return get_knowledge_graph()
 
+@app.get("/health")
+async def health():
+    return {"ok": True, "running": not shutdown_event.is_set()}
+
+# --- control endpoints ---
+@app.post("/control/stop")
+async def stop_loop():
+    shutdown_event.set()
+    logging.info("Shutdown requested")
+    return {"ok": True}
+
+@app.post("/control/start")
+async def start_loop():
+    if shutdown_event.is_set():
+        shutdown_event.clear()
+    return {"ok": True}
+
+# --- background loop ---
 async def lab_loop():
-    while not os.environ.get("STOP_AGENT") == "1":
+    while not shutdown_event.is_set():
         try:
             monitor_new_files()
             await process_all_tasks()
@@ -50,7 +70,7 @@ async def lab_loop():
         except Exception as e:
             logging.error(f"Lab loop error: {e}")
             await asyncio.sleep(INTERVAL)
-    logging.info("Lab loop stopped by STOP_AGENT flag.")
+    logging.info("Lab loop stopped.")
 
 @app.on_event("startup")
 async def startup_event():

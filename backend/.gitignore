@@ -1,5 +1,5 @@
-results/*
-uploads/*
+results/
+uploads/
 __pycache__/
 *.py[cod]
 *.pyo
@@ -24,3 +24,4 @@ env/
 ENV/
 
 config.py
+tasks.json
