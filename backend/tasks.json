@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": 1,
+    "description": "Auto task 1",
+    "status": "completed",
+    "priority": 1
+  },
+  {
+    "id": 2,
+    "description": "Auto task 2",
+    "status": "completed",
+    "priority": 1
+  },
+  {
+    "id": 3,
+    "description": "Auto task 3",
+    "status": "completed",
+    "priority": 1
+  },
+  {
+    "id": 4,
+    "description": "Auto task 4",
+    "status": "completed",
+    "priority": 1
+  },
+  {
+    "id": 5,
+    "description": "Auto task 5",
+    "status": "pending",
+    "priority": 1
+  }
+]
