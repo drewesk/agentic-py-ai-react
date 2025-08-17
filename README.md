@@ -50,6 +50,8 @@ This package provides a **fully autonomous AI research lab**:
 
 ## Setup
 
+first ollama serve,  edit the model name in agent.py or ollama run gemma:2b in a separate shell.
+
 ### Front end
 #### Node.js, React/Vite
 
@@ -68,9 +70,17 @@ npm run dev
 
 ```zsh
 cd backend # in new terminal
+
 pip install -r requirements.txt
 mkdir uploads results
 echo "[]" > tasks.json
 uvicorn main:app --reload
 ```
+Or if rerunning server after install
 
+```zsh
+# Initialize tasks.json with empty list safely
+python -c 'import json; json.dump([], open("tasks.json", "w"))'
+
+uvicorn main:app --reload
+```
