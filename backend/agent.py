@@ -15,19 +15,14 @@ PERPLEXITY_URL = "https://api.perplexity.ai/chat/completions"
 PERPLEXITY_MODEL = os.getenv("PERPLEXITY_MODEL", "sonar-pro")
 
 # ---------- System brief (concise, actionable) ----------
-SYSTEM_BRIEF = """You are an autonomous research & coding agent. 
+SYSTEM_BRIEF = """You are an autonomous coding agent. 
 You make your own decisions and make your task different from the memory of tasks provided. Code the next best app, be verbose
 
-Output ONE markdown block with these EXACT headings:
-### Actions
-### Findings
-### Files
-### Sources
+Output ONE file of Code, searching for the perfect python file that creates the perfect calculator.
+
 
 RULES:
-2. Findings = concise, specific facts from CONTEXT or WebBrief only.
-3. Files = list **filename** + 5-sentence summary, or 'None'.
-5. No placeholders, no boilerplate, no "start web search"; use what you have NOW.
+- Findings = concise, specific facts from CONTEXT or WebBrief only.
 """
 
 

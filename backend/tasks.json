@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "description": "Auto task 1",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-17T20:03:56.445643Z",
+    "completed_at": "2025-08-17T20:04:03.182565Z"
+  },
+  {
+    "id": 2,
+    "description": "Auto task 2",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-17T20:04:33.185496Z",
+    "completed_at": "2025-08-17T20:04:43.144311Z"
+  },
+  {
+    "id": 3,
+    "description": "Auto task 3",
+    "status": "running",
+    "priority": 1,
+    "started_at": "2025-08-17T20:05:13.147809Z"
+  },
+  {
+    "id": 4,
+    "description": "Auto task 4",
+    "status": "pending",
+    "priority": 1
+  }
+]
