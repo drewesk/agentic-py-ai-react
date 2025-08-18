@@ -2,6 +2,9 @@ import os
 import requests
 from typing import List, Dict
 
+from dotenv import load_dotenv
+load_dotenv() # your secure system prompt
+
 # ---------- Config ----------
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()  # "ollama" or "perplexity"
 
@@ -15,15 +18,18 @@ PERPLEXITY_URL = "https://api.perplexity.ai/chat/completions"
 PERPLEXITY_MODEL = os.getenv("PERPLEXITY_MODEL", "sonar-pro")
 
 # ---------- System brief (concise, actionable) ----------
-SYSTEM_BRIEF = """You are an autonomous coding agent. 
-You make your own decisions and make your task different from the memory of tasks provided. Code the next best app, be verbose
+DEFAULT_SYSTEM_BRIEF = """
+You are a blah blah default instructions
 
-Output ONE file of Code, searching for the perfect python file that creates the perfect calculator.
-
-
-RULES:
-- Findings = concise, specific facts from CONTEXT or WebBrief only.
+Insert context on what the agent works on and guildlines here or in your env file
 """
+
+# use env SYSTEM_BRIEF first otherwise default to above var
+SYSTEM_BRIEF = os.getenv("SYSTEM_BRIEF")
+if SYSTEM_BRIEF:
+    SYSTEM_BRIEF = SYSTEM_BRIEF.replace("\\n", "\n")  # convert literal \n into real newlines
+else:
+    SYSTEM_BRIEF = DEFAULT_SYSTEM_BRIEF
 
 
 def _pack_messages(prompt: str, memory_docs: str = "") -> List[Dict[str, str]]:

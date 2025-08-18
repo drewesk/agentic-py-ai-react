@@ -22,6 +22,6 @@ venv/
 .venv/
 env/
 ENV/
-
+.env
 config.py
 tasks.json
