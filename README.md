@@ -107,8 +107,8 @@ optionally on rerun to clear all files and logs
 
 ```bash
 python -c 'import json; json.dump([], open("tasks.json", "w"))'
-python -c 'open("agentic_lab.log", "w").close()'
 
 rm -f ./results/*
+
 uvicorn main:app --reload
 ```

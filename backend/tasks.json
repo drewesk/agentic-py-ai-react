@@ -2,23 +2,8 @@
   {
     "id": 1,
     "description": "Auto task 1",
-    "status": "completed",
+    "status": "running",
     "priority": 1,
-    "started_at": "2025-08-18T20:51:11.539863Z",
-    "completed_at": "2025-08-18T20:52:50.962651Z"
-  },
-  {
-    "id": 2,
-    "description": "Auto task 2",
-    "status": "completed",
-    "priority": 1,
-    "started_at": "2025-08-18T20:53:20.971890Z",
-    "completed_at": "2025-08-18T20:55:45.295756Z"
-  },
-  {
-    "id": 3,
-    "description": "Auto task 3",
-    "status": "pending",
-    "priority": 1
+    "started_at": "2025-08-18T21:11:01.926180Z"
   }
 ]

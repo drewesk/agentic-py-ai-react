@@ -9,3 +9,7 @@ pdfplumber
 requests
 httpx
 python-dotenv
+pypdf
+docx2txt
+pytesseract
+pillow

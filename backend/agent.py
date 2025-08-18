@@ -10,7 +10,7 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()  # "ollama" or "perpl
 
 # Ollama (local)
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "cas/nous-hermes-2-mistral-7b-dpo")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "mistral:latest")
 
 # Perplexity (hosted)
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")  # required if using Perplexity

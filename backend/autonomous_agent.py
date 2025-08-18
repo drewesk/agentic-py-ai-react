@@ -32,13 +32,22 @@ async def _save_tasks(tasks: list):
 # ---------- file ingestion ----------
 def monitor_new_files():
     global PROCESSED_FILES
-    files = os.listdir(UPLOAD_FOLDER)
+    files = [f for f in os.listdir(UPLOAD_FOLDER) if os.path.isfile(os.path.join(UPLOAD_FOLDER, f))]
     new_files = [f for f in files if f not in PROCESSED_FILES]
+
     for file in new_files:
         file_path = os.path.join(UPLOAD_FOLDER, file)
-        file_type = file.split(".")[-1]
-        text = extract_text(file_path, file_type)
-        add_to_memory(text, {"filename": file})
+        file_type = file.rsplit(".", 1)[-1].lower() if "." in file else ""
+        text = extract_text(file_path, file_type) or ""
+        if not text.strip():
+            logging.info(f"Skipped (no extractable text): {file}")
+            PROCESSED_FILES.add(file)
+            continue
+
+        CHUNK = 4000
+        for i in range(0, len(text), CHUNK):
+            add_to_memory(text[i:i+CHUNK], {"filename": file, "offset": i})
+
         add_node(f"doc_{file}", node_type="document", label=file)
         PROCESSED_FILES.add(file)
         logging.info(f"Ingested new file: {file}")
