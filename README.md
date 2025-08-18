@@ -2,6 +2,8 @@
 
 ## Overview
 
+![runtime_image_here](runtime.png)
+
 - If a file is `.gitignored`, just touch it as an empty file in the corresponding location to tree-map.
 
 ```
@@ -16,9 +18,9 @@
 │   ├─ notifier.py
 │   ├─ config.py
 │   ├─ tasks.json
-│   ├─ uploads/
-│   ├─ results/
-│   └─ agentic_lab.log
+│   ├─ uploads/ # Create me Empty
+│   ├─ results/ # Create me Empty
+│   └─ agentic_lab.log 
 ├─ frontend/
 │   └─ ai-lab-dashboard/
 │       ├─ package.json
