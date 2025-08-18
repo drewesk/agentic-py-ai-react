@@ -1,9 +1,0 @@
-[
-  {
-    "id": 1,
-    "description": "Auto task 1",
-    "status": "running",
-    "priority": 1,
-    "started_at": "2025-08-18T21:11:01.926180Z"
-  }
-]
