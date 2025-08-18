@@ -10,7 +10,7 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()  # "ollama" or "perpl
 
 # Ollama (local)
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma:2b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "cas/nous-hermes-2-mistral-7b-dpo")
 
 # Perplexity (hosted)
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")  # required if using Perplexity
@@ -43,12 +43,18 @@ def _pack_messages(prompt: str, memory_docs: str = "") -> List[Dict[str, str]]:
 # ---------- Providers ----------
 def _ask_ollama(messages: List[Dict[str, str]]) -> str:
     """
-    Minimal Ollama chat call. Requires ollama serve and model pulled.
+    Non-streaming Ollama chat call: one complete JSON reply.
     """
     resp = requests.post(
         OLLAMA_URL,
-        json={"model": OLLAMA_MODEL, "messages": messages, "stream": False},
-        timeout=120,
+        json={ 
+            "model": OLLAMA_MODEL,
+            "messages": messages,
+            "stream": False,
+            "options": {"num_predict": 1050, "num_ctx": 5000}, # happy-medium for this large model
+            "keep_alive": "3m",
+        },
+        timeout=600
     )
     resp.raise_for_status()
     data = resp.json()

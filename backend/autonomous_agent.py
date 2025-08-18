@@ -90,19 +90,23 @@ async def process_single_task(task):
     notify(f"Task {task_id} Completed", f"Result saved for task: {task['description']}", method="console")
 
 # ---------- batch ----------
+# had an error with skipping tasks, this is a safeguard.
+_PROCESS_LOCK = asyncio.Lock()
+
 async def process_all_tasks():
-    pending = await get_pending_tasks()
-    if not pending:
-        return
+    async with _PROCESS_LOCK:
+        pending = await get_pending_tasks()
+        if not pending:
+            return
 
-    # pick ONLY the first pending task
-    task = pending[0]
+        # pick ONLY the first pending task
+        task = pending[0]
 
-    # mark just this one as RUNNING
-    await _set_status([task["id"]], "running")
+        # mark just this one as RUNNING
+        await _set_status([task["id"]], "running")
 
-    # run it to completion before touching the next
-    await process_single_task(task)
+        # run it to completion before touching the next
+        await process_single_task(task)
 
-    # mark it COMPLETED
-    await _set_status([task["id"]], "completed")
+        # mark it COMPLETED
+        await _set_status([task["id"]], "completed")
