@@ -25,3 +25,6 @@ ENV/
 .env
 config.py
 tasks.json
+
+#added self-generated lab_loop.lock file to prevent errors when servers crash or reboot
+lab_loop.lock

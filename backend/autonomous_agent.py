@@ -1,33 +1,42 @@
-import os, json, asyncio, logging
-from datetime import datetime
+import os, json, asyncio, logging, uuid
+from datetime import datetime, timedelta
+from typing import Optional
 from file_processor import extract_text
 from memory import add_to_memory, retrieve_from_memory, add_relationship, add_node
 from agent import agent_response
 from notifier import notify
 from config import UPLOAD_FOLDER, RESULTS_FOLDER, TASK_FILE
 
+# POSIX file locking (macOS/Linux)
+import fcntl
+
 logging.basicConfig(filename='agentic_lab.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 PROCESSED_FILES = set()
-_TASKS_LOCK = asyncio.Lock()  # single-process lock is enough here
+
+# intra-process locks
+_TASKS_LOCK = asyncio.Lock()
+_PROCESS_LOCK = asyncio.Lock()
+
+# worker identity & lease timeout
+WORKER_ID = f"{os.getpid()}-{uuid.uuid4().hex[:6]}"
+LEASE_TTL_SEC = 15 * 60  # 15 minutes
+
+
+def _now_iso() -> str:
+    return datetime.utcnow().isoformat() + "Z"
+
 
 # ---------- atomic helpers ----------
 def _atomic_write_json(path: str, data: list):
     tmp = f"{path}.tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
     os.replace(tmp, path)
 
-async def _load_tasks() -> list:
-    # no need to lock for pure read in this single-process flow, but do it for safety
-    async with _TASKS_LOCK:
-        with open(TASK_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-
-async def _save_tasks(tasks: list):
-    async with _TASKS_LOCK:
-        _atomic_write_json(TASK_FILE, tasks)
 
 # ---------- file ingestion ----------
 def monitor_new_files():
@@ -52,32 +61,113 @@ def monitor_new_files():
         PROCESSED_FILES.add(file)
         logging.info(f"Ingested new file: {file}")
 
-# ---------- task helpers ----------
+
+# ---------- task helpers (file-locked) ----------
+def _read_tasks_with_lock(f) -> list:
+    try:
+        f.seek(0)
+        data = json.load(f)
+        if not isinstance(data, list):
+            data = []
+    except Exception:
+        data = []
+    return data
+
+
+async def _claim_next_task() -> Optional[dict]:
+    """Claim exactly one pending task with an exclusive file lock.
+    Also recovers stale 'running' tasks whose lease expired.
+    """
+    async with _TASKS_LOCK:
+        with open(TASK_FILE, "r+", encoding="utf-8") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            tasks = _read_tasks_with_lock(f)
+
+            # recover stale running tasks
+            now = datetime.utcnow()
+            for t in tasks:
+                if t.get("status") == "running":
+                    lease_at = t.get("lease_at")
+                    if lease_at:
+                        try:
+                            lease_dt = datetime.fromisoformat(lease_at.replace('Z',''))
+                        except Exception:
+                            lease_dt = now - timedelta(seconds=LEASE_TTL_SEC + 1)
+                    else:
+                        lease_dt = now - timedelta(seconds=LEASE_TTL_SEC + 1)
+
+                    if (now - lease_dt).total_seconds() > LEASE_TTL_SEC:
+                        t["status"] = "pending"
+                        t.pop("owner", None)
+                        t.pop("lease_at", None)
+
+            pending = sorted([t for t in tasks if t.get("status") == "pending"], key=lambda x: x["id"])
+            if not pending:
+                # persist any recovery changes
+                f.seek(0); f.truncate()
+                json.dump(tasks, f, indent=2); f.flush(); os.fsync(f.fileno())
+                fcntl.flock(f, fcntl.LOCK_UN)
+                return None
+
+            task = pending[0]
+            task["status"] = "running"
+            task.setdefault("started_at", _now_iso())
+            task["owner"] = WORKER_ID
+            task["lease_at"] = _now_iso()
+
+            f.seek(0); f.truncate()
+            json.dump(tasks, f, indent=2); f.flush(); os.fsync(f.fileno())
+            fcntl.flock(f, fcntl.LOCK_UN)
+            return task
+
+
+async def _complete_task(task_id: int):
+    async with _TASKS_LOCK:
+        with open(TASK_FILE, "r+", encoding="utf-8") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            tasks = _read_tasks_with_lock(f)
+            for t in tasks:
+                if t.get("id") == task_id and t.get("owner") == WORKER_ID:
+                    t["status"] = "completed"
+                    t["completed_at"] = _now_iso()
+                    t.pop("owner", None)
+                    t.pop("lease_at", None)
+                    break
+            f.seek(0); f.truncate()
+            json.dump(tasks, f, indent=2); f.flush(); os.fsync(f.fileno())
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
+async def _fail_task(task_id: int, error: str):
+    async with _TASKS_LOCK:
+        with open(TASK_FILE, "r+", encoding="utf-8") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            tasks = _read_tasks_with_lock(f)
+            for t in tasks:
+                if t.get("id") == task_id and t.get("owner") == WORKER_ID:
+                    t["status"] = "failed"
+                    t["error"] = (error or "").splitlines()[-1][:500]
+                    t["failed_at"] = _now_iso()
+                    # keep owner/lease; recovery loop will requeue after TTL
+                    break
+            f.seek(0); f.truncate()
+            json.dump(tasks, f, indent=2); f.flush(); os.fsync(f.fileno())
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
 async def get_pending_tasks():
-    tasks = await _load_tasks()
+    async with _TASKS_LOCK:
+        with open(TASK_FILE, "r", encoding="utf-8") as f:
+            fcntl.flock(f, fcntl.LOCK_SH)
+            tasks = _read_tasks_with_lock(f)
+            fcntl.flock(f, fcntl.LOCK_UN)
     return sorted([t for t in tasks if t.get("status") == "pending"], key=lambda x: x["id"])
 
-async def _set_status(task_ids, new_status):
-    tasks = await _load_tasks()
-    ids = set(task_ids)
-    changed = False
-    for t in tasks:
-        if t["id"] in ids:
-            if t.get("status") != new_status:
-                t["status"] = new_status
-                if new_status == "running":
-                    t["started_at"] = datetime.utcnow().isoformat() + "Z"
-                elif new_status == "completed":
-                    t["completed_at"] = datetime.utcnow().isoformat() + "Z"
-                changed = True
-    if changed:
-        await _save_tasks(tasks)
 
 # ---------- single task ----------
 async def process_single_task(task):
     task_id = task["id"]
     logging.info(f"Processing task {task_id}: {task['description']}")
-    # cleaner context join
     ctx = "\n\n".join(retrieve_from_memory(task["description"], k=5))
     response = await asyncio.to_thread(agent_response, prompt=task["description"], memory_docs=ctx)
     add_to_memory(response, {"task_id": task_id})
@@ -86,36 +176,29 @@ async def process_single_task(task):
     add_relationship(f"task_{task_id}", f"insight_{task_id}", relation_type="produces")
 
     os.makedirs(RESULTS_FOLDER, exist_ok=True)
-    # ordered + unique filename, atomic write
     stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     fname = f"task_{task_id:06d}_{stamp}.txt"
     dst = os.path.join(RESULTS_FOLDER, fname)
     tmp = dst + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         f.write(response)
+        f.flush(); os.fsync(f.fileno())
     os.replace(tmp, dst)
 
     logging.info(f"Completed task {task_id} -> {fname}")
     notify(f"Task {task_id} Completed", f"Result saved for task: {task['description']}", method="console")
 
-# ---------- batch ----------
-# had an error with skipping tasks, this is a safeguard.
-_PROCESS_LOCK = asyncio.Lock()
 
+# ---------- batch ----------
 async def process_all_tasks():
     async with _PROCESS_LOCK:
-        pending = await get_pending_tasks()
-        if not pending:
+        task = await _claim_next_task()
+        if not task:
             return
-
-        # pick ONLY the first pending task
-        task = pending[0]
-
-        # mark just this one as RUNNING
-        await _set_status([task["id"]], "running")
-
-        # run it to completion before touching the next
-        await process_single_task(task)
-
-        # mark it COMPLETED
-        await _set_status([task["id"]], "completed")
+        try:
+            await process_single_task(task)
+        except Exception as e:
+            logging.exception("Task failed")
+            await _fail_task(task["id"], str(e))
+            return
+        await _complete_task(task["id"])
