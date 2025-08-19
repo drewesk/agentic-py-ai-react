@@ -3,19 +3,13 @@ import requests
 from typing import List, Dict
 
 from dotenv import load_dotenv
-load_dotenv() # your secure system prompt
+load_dotenv() # your secure system prompt and API KEYS
 
 # ---------- Config ----------
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()  # "ollama" or "perplexity"
 
 # Ollama (local)
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "mistral:latest")
-
-# Perplexity (hosted)
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")  # required if using Perplexity
-PERPLEXITY_URL = "https://api.perplexity.ai/chat/completions"
-PERPLEXITY_MODEL = os.getenv("PERPLEXITY_MODEL", "sonar-pro")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "cas/nous-hermes-2-mistral-7b-dpo:latest")
 
 # ---------- System brief (concise, actionable) ----------
 DEFAULT_SYSTEM_BRIEF = """
@@ -33,11 +27,11 @@ else:
 
 
 def _pack_messages(prompt: str, memory_docs: str = "") -> List[Dict[str, str]]:
-    context_block = f"Context (past tasks/results):\n{memory_docs.strip()}" if memory_docs else "Context: (none)"
-    user_block = f"{prompt.strip()}\n\n{context_block}"
+    context_block = f"Context (past tasks/results):\n{memory_docs.strip()}" if memory_docs.strip() else ""
+    task_block = f"{prompt.strip()}\n\n{context_block}"
     return [
         {"role": "system", "content": SYSTEM_BRIEF},
-        {"role": "user", "content": user_block},
+        {"role": "task", "content": task_block},
     ]
 
 # ---------- Providers ----------
@@ -51,10 +45,10 @@ def _ask_ollama(messages: List[Dict[str, str]]) -> str:
             "model": OLLAMA_MODEL,
             "messages": messages,
             "stream": False,
-            "options": {"num_predict": 1050, "num_ctx": 5000}, # happy-medium for this large model
+            "options": {"num_predict": 1050, "num_ctx": 2048},
             "keep_alive": "3m",
         },
-        timeout=600
+        timeout=222 #Change tokens and timeout when using stronger servers in production
     )
     resp.raise_for_status()
     data = resp.json()
@@ -67,40 +61,13 @@ def _ask_ollama(messages: List[Dict[str, str]]) -> str:
         return data["messages"][-1].get("content", "")
     return ""
 
-def _ask_perplexity(messages: List[Dict[str, str]], allow_web: bool = True) -> str:
-    """
-    Minimal Perplexity call. If allow_web=True, let Perplexity decide/search.
-    """
-    if not PERPLEXITY_API_KEY:
-        raise RuntimeError("Missing PERPLEXITY_API_KEY for Perplexity provider.")
-    payload = {
-        "model": PERPLEXITY_MODEL,
-        "messages": messages,
-        "temperature": 0.2,
-        "top_p": 0.9,
-        "max_tokens": 1400,
-        "search_mode": "web",                # or "academic"
-        "disable_search": not allow_web,     # False enables web search
-        "enable_search_classifier": allow_web,  # let it auto-decide when to search
-        # "web_search_options": {"search_context_size": "medium"},
-    }
-    headers = {"Authorization": f"Bearer {PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
-    resp = requests.post(PERPLEXITY_URL, json=payload, headers=headers, timeout=120)
-    resp.raise_for_status()
-    data = resp.json()
-    return data["choices"][0]["message"]["content"]
-
 # ---------- Public API ----------
 def agent_response(prompt: str, memory_docs: str = "", allow_web: bool = True) -> str:
     """
     Called by autonomous_agent.py. Keep it simple:
       - We always pack past memory into the context window.
-      - Provider is selected via LLM_PROVIDER env.
-      - Perplexity can auto-search when allow_web=True.
     """
     messages = _pack_messages(prompt, memory_docs)
-    if LLM_PROVIDER == "perplexity":
-        return _ask_perplexity(messages, allow_web=allow_web)
     return _ask_ollama(messages)
 
 # Optional convenience wrapper for router use
