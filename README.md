@@ -20,7 +20,10 @@
 │   ├─ tasks.json
 │   ├─ uploads/ # Create me Empty
 │   ├─ results/ # Create me Empty
-│   └─ agentic_lab.log
+│   ├─ .env # Create me Empty
+│   ├─ tasks.json # Will generate with first commands below
+│   ├─ lab_loop.lock # Will Auto-generate by Server
+│   └─ agentic_lab.log # Will Auto-generate by Server
 ├─ frontend/
 │   └─ ai-lab-dashboard/
 │       ├─ package.json
@@ -49,7 +52,8 @@ This package provides a **fully autonomous AI research lab**:
 ---
 
 > ⚠️ **Kill Switch Notice**  
-> If the backend server goes rogue and keeps spawning no matter how many `kill -9 <PIDs>` you do, we've added a kill switch to the autonomous loop.  
+> [UPDATE\]: `pkill -9 -f uvicorn` or `pkill -9 -f python` will do just fine.
+> If the backend server goes rogue and keeps spawning instances no matter how many `kill -9 <PIDs>` you do, we've added a kill switch to the autonomous loop.  
 > Run in the shell (inside `backend/` where the server is running):
 >
 > ```bash
@@ -124,3 +128,7 @@ rm -f ./results/*
 
 uvicorn main:app --reload
 ```
+
+### Open Source ❤️
+
+- Made with love, use with pure intent and contact me at TechNYC.io with any improved versions. Thanks!
