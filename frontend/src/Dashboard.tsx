@@ -1,5 +1,6 @@
-import TaskMonitor from "./TaskMonitor";
-import MemoryMetrics from "./MemoryMetrics";
+import TaskMonitor from "./TaskMonitor.tsx";
+import MemoryMetrics from "./MemoryMetrics.tsx";
+import KnowledgeGraph from "./KnowledgeGraph.tsx";
 
 export default function Dashboard() {
   return (
@@ -12,6 +13,7 @@ export default function Dashboard() {
     >
       <TaskMonitor />
       <MemoryMetrics />
+      <KnowledgeGraph />
     </div>
   );
 }

@@ -5,7 +5,7 @@ from typing import List, Dict
 from dotenv import load_dotenv
 load_dotenv() # your secure system prompt and API KEYS
 
-# ---------- Config ----------
+# ------- Config ----------
 
 # Ollama (local)
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")

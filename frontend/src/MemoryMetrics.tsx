@@ -9,7 +9,7 @@ export default function MemoryMetrics() {
     const interval = setInterval(async () => {
       const res = await axios.get("http://localhost:8000/memory_metrics");
       setMemoryCount(res.data.memory_count);
-    }, 5000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 

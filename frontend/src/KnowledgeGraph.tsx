@@ -23,7 +23,7 @@ export default function KnowledgeGraph() {
       setGraphData(res.data);
     };
     fetchGraph();
-    const interval = setInterval(fetchGraph, 5000);
+    const interval = setInterval(fetchGraph, 10000);
     return () => clearInterval(interval);
   }, []);
 
