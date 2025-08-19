@@ -1,0 +1,240 @@
+[
+  {
+    "id": 1,
+    "description": "Auto task 1",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:24:33.214328Z",
+    "completed_at": "2025-08-19T18:26:21.122612Z"
+  },
+  {
+    "id": 2,
+    "description": "Auto task 2",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:26:51.128857Z",
+    "completed_at": "2025-08-19T18:28:21.314788Z"
+  },
+  {
+    "id": 3,
+    "description": "Auto task 3",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:28:51.325166Z",
+    "completed_at": "2025-08-19T18:30:22.905609Z"
+  },
+  {
+    "id": 4,
+    "description": "Auto task 4",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:30:52.913101Z",
+    "completed_at": "2025-08-19T18:32:22.494428Z"
+  },
+  {
+    "id": 5,
+    "description": "Auto task 5",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:32:52.500809Z",
+    "completed_at": "2025-08-19T18:34:22.083251Z"
+  },
+  {
+    "id": 6,
+    "description": "Auto task 6",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:34:52.094142Z",
+    "completed_at": "2025-08-19T18:36:21.696328Z"
+  },
+  {
+    "id": 7,
+    "description": "Auto task 7",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:36:51.705697Z",
+    "completed_at": "2025-08-19T18:37:56.282341Z"
+  },
+  {
+    "id": 8,
+    "description": "Auto task 8",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:38:26.291784Z",
+    "completed_at": "2025-08-19T18:39:58.162590Z"
+  },
+  {
+    "id": 9,
+    "description": "Auto task 9",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:40:28.189976Z",
+    "completed_at": "2025-08-19T18:42:02.794937Z"
+  },
+  {
+    "id": 10,
+    "description": "Auto task 10",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:42:32.804462Z",
+    "completed_at": "2025-08-19T18:44:11.214530Z"
+  },
+  {
+    "id": 11,
+    "description": "Auto task 11",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:44:41.226924Z",
+    "completed_at": "2025-08-19T18:45:55.121826Z"
+  },
+  {
+    "id": 12,
+    "description": "Auto task 12",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:46:25.129608Z",
+    "completed_at": "2025-08-19T18:47:32.010068Z"
+  },
+  {
+    "id": 13,
+    "description": "Auto task 13",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:48:02.021526Z",
+    "completed_at": "2025-08-19T18:49:39.209801Z"
+  },
+  {
+    "id": 14,
+    "description": "Auto task 14",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:50:09.223667Z",
+    "completed_at": "2025-08-19T18:51:50.514681Z"
+  },
+  {
+    "id": 15,
+    "description": "Auto task 15",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:52:20.528019Z",
+    "completed_at": "2025-08-19T18:53:55.417637Z"
+  },
+  {
+    "id": 16,
+    "description": "Auto task 16",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:54:25.435798Z",
+    "completed_at": "2025-08-19T18:55:59.715166Z"
+  },
+  {
+    "id": 17,
+    "description": "Auto task 17",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:56:29.758044Z",
+    "completed_at": "2025-08-19T18:58:18.781063Z"
+  },
+  {
+    "id": 18,
+    "description": "Auto task 18",
+    "status": "completed",
+    "priority": 1,
+    "started_at": "2025-08-19T18:58:48.786949Z",
+    "completed_at": "2025-08-19T19:00:26.504862Z"
+  },
+  {
+    "id": 19,
+    "description": "Auto task 19",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:00:56.512052Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:00:56.512075Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ef7ce0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:00:56.568129Z"
+  },
+  {
+    "id": 20,
+    "description": "Auto task 20",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:01:26.572661Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:01:26.572674Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ef7460>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:01:26.584112Z"
+  },
+  {
+    "id": 21,
+    "description": "Auto task 21",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:01:56.589108Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:01:56.589120Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ffc5a0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:01:56.600178Z"
+  },
+  {
+    "id": 22,
+    "description": "Auto task 22",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:02:26.605614Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:02:26.605628Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ffc9e0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:02:26.619955Z"
+  },
+  {
+    "id": 23,
+    "description": "Auto task 23",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:02:56.625435Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:02:56.625445Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ffc7c0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:02:56.637369Z"
+  },
+  {
+    "id": 24,
+    "description": "Auto task 24",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:03:26.641807Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:03:26.641823Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ef79b0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:03:26.656689Z"
+  },
+  {
+    "id": 25,
+    "description": "Auto task 25",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:03:56.662767Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:03:56.662788Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ef7460>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:03:56.681184Z"
+  },
+  {
+    "id": 26,
+    "description": "Auto task 26",
+    "status": "failed",
+    "priority": 1,
+    "started_at": "2025-08-19T19:04:26.687400Z",
+    "owner": "36164-c434d2",
+    "lease_at": "2025-08-19T19:04:26.687417Z",
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104ffc5a0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "failed_at": "2025-08-19T19:04:26.699226Z"
+  },
+  {
+    "id": 27,
+    "description": "Auto task 27",
+    "status": "pending",
+    "priority": 1
+  }
+]
