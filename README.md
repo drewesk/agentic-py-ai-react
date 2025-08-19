@@ -20,7 +20,7 @@
 │   ├─ tasks.json
 │   ├─ uploads/ # Create me Empty
 │   ├─ results/ # Create me Empty
-│   └─ agentic_lab.log 
+│   └─ agentic_lab.log
 ├─ frontend/
 │   └─ ai-lab-dashboard/
 │       ├─ package.json
@@ -35,30 +35,34 @@
 
 This package provides a **fully autonomous AI research lab**:
 
-- Multi-agent parallel task execution  
-- Self-generating tasks with priorities  
-- File ingestion & persistent memory  
-- Cross-referencing and insight generation  
-- Email / Slack / Console notifications  
-- Logging & metrics  
-- Live React dashboard with:  
-  - Task monitor  
-  - Memory metrics  
-  - Interactive knowledge graph  
+- Multi-agent parallel task execution
+- Self-generating tasks with priorities
+- File ingestion & persistent memory
+- Cross-referencing and insight generation
+- Email / Slack / Console notifications
+- Logging & metrics
+- Live React dashboard with:
+  - Task monitor
+  - Memory metrics
+  - Interactive knowledge graph
 
 ---
 
 > ⚠️ **Kill Switch Notice**  
 > If the backend server goes rogue and keeps spawning no matter how many `kill -9 <PIDs>` you do, we've added a kill switch to the autonomous loop.  
-> Run in the shell (inside `backend/` where the server is running):  
+> Run in the shell (inside `backend/` where the server is running):
+>
 > ```bash
 > export STOP_AGENT=1
-> ```  
-> Then run:  
+> ```
+>
+> Then run:
+>
 > ```bash
 > pkill -f python
-> ```  
-> to prevent the server from overtaking society. You're a true hero now!  
+> ```
+>
+> to prevent the server from overtaking society. You're a true hero now!
 
 ---
 
@@ -67,6 +71,7 @@ This package provides a **fully autonomous AI research lab**:
 First run `ollama serve`, edit the model name in `agent.py`, or run `ollama run gemma:2b` in a separate shell.
 
 ### Frontend
+
 #### Node.js, React/Vite
 
 > Runs on `localhost:5173`
@@ -78,15 +83,21 @@ npm run dev
 ```
 
 ### Backend
+
 #### Python
 
-> Runs on `localhost:5173`
+> Runs on `localhost:8000`
 
 ```bash
 cd backend   # in new terminal
+
+# follow the .example files of how to populate .env and config.py
+# and leave task.json empty on initalizing here
+touch tasks.json .env config.py
+mkdir uploads results
+
 pip install -r requirements.txt
 
-mkdir uploads results
 echo "[]" > tasks.json
 
 uvicorn main:app --reload
@@ -103,7 +114,8 @@ python -c 'import json; json.dump([], open("tasks.json", "w"))'
 
 uvicorn main:app --reload
 ```
-optionally on rerun to clear all files and logs
+
+Optionally on rerun to clear all files and logs:
 
 ```bash
 python -c 'import json; json.dump([], open("tasks.json", "w"))'
