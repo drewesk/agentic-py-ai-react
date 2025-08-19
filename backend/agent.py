@@ -1,6 +1,9 @@
 import os
+import json
 import requests
 from typing import List, Dict
+
+from serper import web_brief
 
 from dotenv import load_dotenv
 load_dotenv() # your secure system prompt and API KEYS
@@ -61,18 +64,57 @@ def _ask_ollama(messages: List[Dict[str, str]]) -> str:
         return data["messages"][-1].get("content", "")
     return ""
 
+# _________ WebSearch ___________  
+_DECIDER = (
+    'Return STRICT JSON only: {"do_search": true|false, "query": "<short query or empty>"} '
+    'Bias: default to do_search=true unless the CONTEXT fully answers. '
+    'Query rules: (a) 3–7 words, (b) MUST include at least one salient term from TASK or CONTEXT, '
+    '(c) add a disambiguator (year/product/library/site) when useful, (d) no quotes, no punctuation.'
+)
+
+def _decide_search(prompt: str, context: str) -> tuple[bool, str]:
+    """Ask the LLM if web is needed. Uses your same roles: system + task."""
+    messages = [
+        {"role": "system", "content": _DECIDER},
+        {"role": "task", "content": f"{prompt.strip()}\n\nContext (past tasks/results):\n{(context or '').strip()}"},
+    ]
+    raw = _ask_ollama(messages).strip()
+    print("[WEBSEARCH] Raw decider output:", raw)
+
+    try:
+        obj = json.loads(raw)
+        return bool(obj.get("do_search")), (obj.get("query") or "").strip()
+    except Exception:
+        return False, ""
+
+
+
 # ---------- Public API ----------
 def agent_response(prompt: str, memory_docs: str = "", allow_web: bool = True) -> str:
     """
     Called by autonomous_agent.py. Keep it simple:
       - We always pack past memory into the context window.
+      - If allowed and needed, we may fetch a small WebBrief first.
     """
+    do_search, query = (False, "")
+    if allow_web and os.getenv("SERPER_API_KEY"):
+        do_search, query = _decide_search(prompt, memory_docs)
+        print(f"[WEBSEARCH] Search decision: {do_search}, query='{query}+?'")
+
+    if do_search and query:
+        print(f"[WEBSEARCH] Sending request to Serper with query: {query}")
+        brief = web_brief(query)  # sync HTTP; your caller can thread this
+        if brief:
+            print(f"[WEBSEARCH] Got Serper response length: {len(brief)} chars")
+            addon = "WebBrief:\n" + brief
+            memory_docs = (memory_docs + "\n\n" + addon) if memory_docs.strip() else addon
+        else:
+            print("[WEBSEARCH] No response from Serper")
+
     messages = _pack_messages(prompt, memory_docs)
+    print(f"[WEBSEARCH] Messages packed, roles={[m['role'] for m in messages]}")
     return _ask_ollama(messages)
 
-# Optional convenience wrapper for router use
-def agent_router(task_description: str, memory_context: str = "") -> str:
-    return agent_response(task_description, memory_docs=memory_context, allow_web=True)
 
 if __name__ == "__main__":
     # Quick smoke test (set env first)

@@ -8,7 +8,7 @@ from memory import vector_db, get_knowledge_graph
 
 INTERVAL = int(os.getenv("LAB_LOOP_INTERVAL", "30"))
 
-app = FastAPI(title="Agentic Research Lab API")
+app = FastAPI(title="AgenticPY")
 
 logging.basicConfig(filename='agentic_lab.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
